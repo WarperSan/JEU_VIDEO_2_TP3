@@ -19,29 +19,6 @@ public class MeshGenerator : MonoBehaviour
         meshFilter.mesh = GenerateMesh(Shape);
     }
 
-    // private void Update()
-    // {
-    //     elapsed += Time.deltaTime;
-
-    //     if (elapsed >= cooldown)
-    //     {
-    //         elapsed -= cooldown;
-
-
-
-    //     }
-
-    //     Vector3[] newVertices = (Vector3[])vertices.Clone();
-
-    //     for (int i = 0; i < newVertices.Length; i++)
-    //     {
-    //         newVertices[i] += new Vector3(0, 1, 0) * Mathf.Sin(Time.time + newVertices[i].x);
-    //     }
-
-    //     meshFilter.mesh.SetVertices(newVertices);
-    //     meshFilter.mesh.RecalculateNormals();
-    // }
-
     public static Mesh GenerateMesh(Shape shape)
     {
         Mesh mesh = new();
