@@ -42,9 +42,9 @@ namespace PartieB
             Mesh mesh = new();
             GenerateCube(mesh, blockSize);
 
-            int height = blocks.GetLength(0);
-            int length = blocks.GetLength(1);
-            int width = blocks.GetLength(2);
+            int height = blocks.GetHeight();
+            int length = blocks.GetLength();
+            int width = blocks.GetWidth();
 
             List<CombineInstance> instances = new();
 
