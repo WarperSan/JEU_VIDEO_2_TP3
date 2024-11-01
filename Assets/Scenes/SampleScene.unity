@@ -471,7 +471,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockPrefab: {fileID: 2362950169638944968, guid: 8fe26e978e9db9594b18421ff9ca99be, type: 3}
   blockSize: {x: 1, y: 1, z: 1}
-  playSize: {x: 4, y: 1, z: 4}
+  playSize: {x: 5, y: 5, z: 5}
+  tilesCount: {x: 24, y: 34}
 --- !u!33 &1439678144
 MeshFilter:
   m_ObjectHideFlags: 0

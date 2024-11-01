@@ -22,25 +22,18 @@ namespace PartieB
 
         private void Awake()
         {
-            GenerateMesh(new Block[2, 2, 2]
-            {
-                {
-                    {
-                        Block.AIR, Block.DIRT
-                    },
-                    {
-                        Block.DIRT, Block.AIR
-                    }
-                },
-                {
-                    {
-                        Block.AIR, Block.AIR
-                    },
-                    {
-                        Block.ORE_DIAMOND, Block.STONE
-                    }
-                }
-            });
+            var blocks = BlockHelper.Generate(playSize);
+
+            blocks.SetBlock(0, 0, 0, Block.BEDROCK);
+            blocks.SetBlock(playSize.x - 1, playSize.y - 1, playSize.z - 1, Block.BEDROCK);
+
+            blocks.SetBlock(2, 1, 1, Block.DIRT);
+            blocks.SetBlock(3, 1, 1, Block.ORE_IRON);
+            blocks.SetBlock(1, 1, 2, Block.DIRT);
+            blocks.SetBlock(1, 2, 2, Block.ORE_DIAMOND);
+            blocks.SetBlock(2, 2, 2, Block.STONE);
+
+            GenerateMesh(blocks);
         }
 
         private void GenerateMesh(Block[,,] blocks)
@@ -80,12 +73,16 @@ namespace PartieB
 
         #region Block
 
+        [Header("Textures")]
+        [SerializeField]
+        private Vector2Int tilesCount = new(24, 34);
+
         private CombineInstance GenerateBlock(Block block, Vector3 position, Mesh mesh)
         {
             var obj = Instantiate(blockPrefab);
 
             obj.transform.parent = transform;
-            obj.transform.localPosition = position;
+            obj.transform.localPosition = Vector3.Scale(position, blockSize);
             obj.SetActive(false);
 
             MeshFilter filter = obj.GetComponent<MeshFilter>();
@@ -100,30 +97,18 @@ namespace PartieB
             };
         }
 
-        private const float TEXTURE_WIDTH = 384;
-        private const float TEXTURE_HEIGHT = 544;
-        private const float BLOCK_SIZE = 16;
-
         private void TextureBlock(Block block, Mesh mesh)
         {
-            Vector2Int pos = block switch
-            {
-                Block.BEDROCK => new(1, 1),
-                Block.DIRT => new(2, 0),
-                Block.STONE => new(1, 0),
-                Block.ORE_IRON => new(1, 2),
-                Block.ORE_DIAMOND => new(2, 3),
-                _ => new(0, 0)
-            };
-
+            int y = (int)block / tilesCount.x;
+            int x = (int)block - y * tilesCount.x;
 
             // CHANGE UVS
-            Vector2 size = new(BLOCK_SIZE / TEXTURE_WIDTH, BLOCK_SIZE / TEXTURE_HEIGHT);
+            Vector2 topLeft, topRight, bottomLeft, bottomRight = new();
 
-            Vector2 topLeft = new(pos.x * size.x, 1f - pos.y * size.y);
-            Vector2 topRight = new((pos.x + 1) * size.x, 1f - pos.y * size.y);
-            Vector2 bottomLeft = new(pos.x * size.x, 1f - (pos.y + 1) * size.y);
-            Vector2 bottomRight = new((pos.x + 1) * size.x, 1f - (pos.y + 1) * size.y);
+            topLeft.x = bottomLeft.x = x / (float)tilesCount.x;
+            topLeft.y = topRight.y = (y + 1) / (float)tilesCount.y;
+            topRight.x = bottomRight.x = (x + 1) / (float)tilesCount.x;
+            bottomLeft.y = bottomRight.y = y / (float)tilesCount.y;
 
             mesh.uv = new Vector2[]
             {
