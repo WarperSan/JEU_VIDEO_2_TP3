@@ -23,7 +23,12 @@ namespace PartieB
         private void Awake()
         {
             var blocks = BlockHelper.Generate(playSize);
+            GenerateTerrain(blocks);
+            GenerateMesh(blocks);
+        }
 
+        private void GenerateTerrain(Block[,,] blocks)
+        {
             blocks.SetBlock(0, 0, 0, Block.BEDROCK);
             blocks.SetBlock(playSize.x - 1, playSize.y - 1, playSize.z - 1, Block.BEDROCK);
 
@@ -32,8 +37,6 @@ namespace PartieB
             blocks.SetBlock(1, 1, 2, Block.DIRT);
             blocks.SetBlock(1, 2, 2, Block.ORE_DIAMOND);
             blocks.SetBlock(2, 2, 2, Block.STONE);
-
-            GenerateMesh(blocks);
         }
 
         private void GenerateMesh(Block[,,] blocks)
@@ -146,12 +149,12 @@ namespace PartieB
             // 2) Define the vertices
             Vector3[] vertices = new Vector3[]
             {
-            c[0], c[1], c[2], c[3], // Bottom
-	        c[7], c[4], c[0], c[3], // Left
-	        c[4], c[5], c[1], c[0], // Front
-	        c[6], c[7], c[3], c[2], // Back
-	        c[5], c[6], c[2], c[1], // Right
-	        c[7], c[6], c[5], c[4]  // Top
+                c[0], c[1], c[2], c[3], // Bottom
+                c[7], c[4], c[0], c[3], // Left
+                c[4], c[5], c[1], c[0], // Front
+                c[6], c[7], c[3], c[2], // Back
+                c[5], c[6], c[2], c[1], // Right
+                c[7], c[6], c[5], c[4]  // Top
             };
 
             // 3) Define each vertex's Normal

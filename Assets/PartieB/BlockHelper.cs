@@ -15,11 +15,11 @@ namespace PartieB
             // Fill with air
             for (int y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (int z = 0; z < width; z++)
                 {
-                    for (int z = 0; z < length; z++)
+                    for (int x = 0; x < length; x++)
                     {
-                        blocks[y, z, x] = block;
+                        blocks[y, x, z] = block;
                     }
                 }
             }
@@ -42,16 +42,16 @@ namespace PartieB
             if (z < 0)
                 return false;
 
-            if (x >= blocks.GetWidth())
+            if (x >= blocks.GetLength())
                 return false;
 
             if (y >= blocks.GetHeight())
                 return false;
 
-            if (z >= blocks.GetLength())
+            if (z >= blocks.GetWidth())
                 return false;
 
-            blocks[y, z, x] = state;
+            blocks[y, x, z] = state;
             return true;
         }
     }
