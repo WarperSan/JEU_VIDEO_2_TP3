@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PartieB
@@ -22,39 +23,8 @@ namespace PartieB
 
         private void Awake()
         {
-            var blocks = BlockHelper.Generate(playSize);
-            GenerateTerrain(blocks);
+            var blocks = BlockGeneration.Generate(playSize);
             GenerateMesh(blocks);
-        }
-
-        private void GenerateTerrain(Block[,,] blocks)
-        {
-            //blocks.SetBlock(0, 0, 0, Block.BEDROCK);
-            //blocks.SetBlock(playSize.x - 1, playSize.y - 1, playSize.z - 1, Block.BEDROCK);
-
-            //blocks.SetBlock(2, 1, 1, Block.DIRT);
-            //blocks.SetBlock(3, 1, 1, Block.ORE_IRON);
-            //blocks.SetBlock(1, 1, 2, Block.DIRT);
-            //blocks.SetBlock(1, 2, 2, Block.ORE_DIAMOND);
-            //blocks.SetBlock(2, 2, 2, Block.STONE);
-            Block[] blockTypes = new Block[]
-            {
-                Block.DIRT, Block.ORE_DIAMOND, Block.GRASS
-            };
-
-            for (int x = 0; x < playSize.x; x++)
-            {
-                for (int z = 0; z < playSize.z; z++)
-                {
-                    int height = Random.Range(1, playSize.y);
-
-                    for (int y = 0; y < height; y++)
-                    {
-                        Block randomBlock = blockTypes[Random.Range(0, blockTypes.Length)];
-                        blocks.SetBlock(x, y, z, randomBlock);
-                    }
-                }
-            }
         }
 
         private void GenerateMesh(Block[,,] blocks)
@@ -102,6 +72,7 @@ namespace PartieB
         {
             var obj = Instantiate(blockPrefab);
 
+            obj.GetComponent<BlockInformation>().type = block;
             obj.transform.parent = transform;
             obj.transform.localPosition = Vector3.Scale(position, blockSize);
             obj.SetActive(false);
@@ -227,6 +198,27 @@ namespace PartieB
             mesh.triangles = triangles;
             mesh.normals = normals;
             mesh.uv = uvs;
+        }
+
+        #endregion
+
+        #region Visibility
+
+        [Header("Visibility")]
+        [SerializeField]
+        private Block[] showBlocks;
+
+        private void OnValidate()
+        {
+            this.ShowBlocks();
+        }
+
+        private void ShowBlocks()
+        {
+            BlockInformation[] children = transform.GetComponentsInChildren<BlockInformation>(true);
+
+            foreach (var item in children)
+                item.gameObject.SetActive(showBlocks.Contains(item.type));
         }
 
         #endregion

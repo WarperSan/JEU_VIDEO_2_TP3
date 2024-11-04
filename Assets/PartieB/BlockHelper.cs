@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace PartieB
@@ -31,7 +32,7 @@ namespace PartieB
         public static int GetLength(this Block[,,] blocks) => blocks.GetLength(1);
         public static int GetWidth(this Block[,,] blocks) => blocks.GetLength(2);
 
-        public static bool SetBlock(this Block[,,] blocks, int x, int y, int z, Block state)
+        public static bool IsInBounds(this Block[,,] blocks, int x, int y, int z)
         {
             if (x < 0)
                 return false;
@@ -49,6 +50,22 @@ namespace PartieB
                 return false;
 
             if (z >= blocks.GetWidth())
+                return false;
+
+            return true;
+        }
+
+        public static Block GetBlock(this Block[,,] blocks, int x, int y, int z)
+        {
+            if (!blocks.IsInBounds(x, y, z))
+                throw new ArgumentOutOfRangeException();
+
+            return blocks[y, x, z];
+        }
+
+        public static bool SetBlock(this Block[,,] blocks, int x, int y, int z, Block state)
+        {
+            if (!blocks.IsInBounds(x, y, z))
                 return false;
 
             blocks[y, x, z] = state;
