@@ -4,6 +4,6 @@ namespace PartieB
 {
     public class BlockInformation : MonoBehaviour
     {
-        public Block type = Block.AIR;
+        public BlockType type = BlockType.AIR;
     }
 }

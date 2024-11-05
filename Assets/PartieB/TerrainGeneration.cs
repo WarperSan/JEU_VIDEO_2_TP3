@@ -27,7 +27,7 @@ namespace PartieB
             GenerateMesh(blocks);
         }
 
-        private void GenerateMesh(Block[,,] blocks)
+        private void GenerateMesh(BlockType[,,] blocks)
         {
             // Create block mesh
             Mesh mesh = new();
@@ -46,9 +46,9 @@ namespace PartieB
                 {
                     for (int z = 0; z < length; z++)
                     {
-                        Block block = blocks[y, z, x];
+                        BlockType block = blocks[y, z, x];
 
-                        if (block != Block.AIR)
+                        if (block != BlockType.AIR)
                             instances.Add(GenerateBlock(block, new Vector3(x, y, z), mesh));
                     }
                 }
@@ -68,7 +68,7 @@ namespace PartieB
         [SerializeField]
         private Vector2Int tilesCount = new(24, 34);
 
-        private CombineInstance GenerateBlock(Block block, Vector3 position, Mesh mesh)
+        private CombineInstance GenerateBlock(BlockType block, Vector3 position, Mesh mesh)
         {
             var obj = Instantiate(blockPrefab);
 
@@ -89,7 +89,7 @@ namespace PartieB
             };
         }
 
-        private void TextureBlock(Block block, Mesh mesh)
+        private void TextureBlock(BlockType block, Mesh mesh)
         {
             int y = (int)block / tilesCount.x;
             int x = (int)block - y * tilesCount.x;
@@ -206,7 +206,7 @@ namespace PartieB
 
         [Header("Visibility")]
         [SerializeField]
-        private Block[] showBlocks;
+        private BlockType[] showBlocks;
 
         private void OnValidate()
         {

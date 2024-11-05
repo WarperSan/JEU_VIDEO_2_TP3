@@ -1,6 +1,6 @@
 namespace PartieB
 {
-    public enum Block
+    public enum BlockType
     {
         AIR = 23 + 24 * 0,
 
@@ -20,6 +20,6 @@ namespace PartieB
         SPAWNER = 1 + 24 * 29,
     
         // LIQUIDS
-        LAVA = 11 + 24 * 15
+        WATER = 10 + 24 * 15
     }
 }

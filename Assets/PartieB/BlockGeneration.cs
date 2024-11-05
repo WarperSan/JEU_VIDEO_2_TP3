@@ -1,12 +1,18 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PartieB
 {
     public static class BlockGeneration
     {
+        private const float PROPAGATION_RATE = 0.5f;
+        private const float DECREASE_PROPAGATION_RATE = 0.1f;
+        private const float SPAWN_RATE_DIAMOND = 0.01f;
+        private const float SPAWN_RATE_IRON = 0.01f;
+
         public static float RANDOM = Random.Range(0, 100);
 
-        public static Block[,,] Generate(Vector3Int size)
+        public static BlockType[,,] Generate(Vector3Int size)
         {
             var blocks = BlockHelper.Generate(size);
 
@@ -18,17 +24,20 @@ namespace PartieB
                 for (int z = 0; z < size.z; z++)
                 {
                     for (int y = 0; y <= levels[x, z]; y++)
-                        blocks.SetBlock(x, y, z, Block.STONE);
+                        blocks.SetBlock(x, y, z, BlockType.STONE);
                 }
             }
 
             // Paint terrain
             blocks.PaintGrass();
-            blocks.PaintLava();
+            blocks.PaintWater();
             blocks.PaintDirt();
 
             // Generate resources per rarity
+            blocks.PaintDiamond();
+
             // Generate clusters
+            blocks.GenerateClusters(BlockType.ORE_IRON, SPAWN_RATE_IRON);
 
             return blocks;
         }
@@ -60,13 +69,9 @@ namespace PartieB
             return levels;
         }
 
-        private static void PaintGrass(this Block[,,] blocks)
+        private static void PaintGrass(this BlockType[,,] blocks)
         {
-            Vector3Int size = new(
-                blocks.GetLength(),
-                blocks.GetHeight(),
-                blocks.GetWidth()
-            );
+            Vector3Int size = blocks.GetSize();
 
             for (int x = 0; x < size.x; x++)
             {
@@ -74,32 +79,27 @@ namespace PartieB
                 {
                     for (int y = size.y - 1; y >= 0; y--)
                     {
-                        if (blocks.GetBlock(x, y, z) == Block.AIR)
+                        if (blocks.GetBlock(x, y, z) == BlockType.AIR)
                             continue;
 
-                        if (blocks.GetBlock(x, y, z) != Block.STONE)
+                        if (blocks.GetBlock(x, y, z) != BlockType.STONE)
                             continue;
 
-                        if (y == size.y - 1 || blocks.GetBlock(x, y + 1, z) == Block.AIR)
+                        if (y == size.y - 1 || blocks.GetBlock(x, y + 1, z) == BlockType.AIR)
                         {
-                            blocks.SetBlock(x, y, z, Block.GRASS);
+                            blocks.SetBlock(x, y, z, BlockType.GRASS);
                             break;
                         }
-
                     }
                 }
             }
         }
 
-        private static void PaintLava(this Block[,,] blocks)
+        private static void PaintWater(this BlockType[,,] blocks)
         {
-            Vector3Int size = new(
-                blocks.GetLength(),
-                blocks.GetHeight(),
-                blocks.GetWidth()
-            );
+            Vector3Int size = blocks.GetSize();
 
-            int level = Mathf.FloorToInt(0.5f * size.y);
+            int level = Mathf.FloorToInt(0.3f * size.y);
 
             for (int x = 0; x < size.x; x++)
             {
@@ -107,32 +107,28 @@ namespace PartieB
                 {
                     for (int y = level; y >= 0; y--)
                     {
-                        if (blocks.GetBlock(x, y, z) == Block.AIR)
+                        if (blocks.GetBlock(x, y, z) == BlockType.AIR)
                         {
-                            blocks.SetBlock(x, y, z, Block.LAVA);
+                            blocks.SetBlock(x, y, z, BlockType.WATER);
 
                             if (y == 0)
                                 continue;
 
-                            Block blockUnder = blocks.GetBlock(x, y - 1, z);
+                            BlockType blockUnder = blocks.GetBlock(x, y - 1, z);
 
-                            if (blockUnder is Block.AIR or Block.LAVA)
+                            if (blockUnder is BlockType.AIR or BlockType.WATER)
                                 continue;
 
-                            blocks.SetBlock(x, y - 1, z, Block.COBBLESTONE);
+                            blocks.SetBlock(x, y - 1, z, BlockType.COBBLESTONE);
                         }
                     }
                 }
             }
         }
 
-        private static void PaintDirt(this Block[,,] blocks)
+        private static void PaintDirt(this BlockType[,,] blocks)
         {
-            Vector3Int size = new(
-               blocks.GetLength(),
-               blocks.GetHeight(),
-               blocks.GetWidth()
-            );
+            Vector3Int size = blocks.GetSize();
 
             for (int x = 0; x < size.x; x++)
             {
@@ -140,16 +136,92 @@ namespace PartieB
                 {
                     for (int y = size.y - 1; y >= 0; y--)
                     {
-                        if (blocks.GetBlock(x, y, z) == Block.GRASS)
+                        if (blocks.GetBlock(x, y, z) == BlockType.GRASS)
                         {
-                            blocks.SetBlock(x, y - 1, z, Block.DIRT);
-                            blocks.SetBlock(x, y - 2, z, Block.DIRT);
-                            blocks.SetBlock(x, y - 3, z, Block.DIRT);
+                            blocks.SetBlock(x, y - 1, z, BlockType.DIRT);
+                            blocks.SetBlock(x, y - 2, z, BlockType.DIRT);
                             break;
                         }
-                        
                     }
                 }
+            }
+        }
+
+        private static void PaintDiamond(this BlockType[,,] blocks)
+        {
+            Vector3Int size = blocks.GetSize();
+
+            for (int x = 0; x < size.x; x++)
+            {
+                for (int z = 0; z < size.z; z++)
+                {
+                    for (int y = size.y - 1; y >= 0; y--)
+                    {
+                        if (blocks.GetBlock(x, y, z) == BlockType.STONE)
+                        {
+                            if (Random.value <= SPAWN_RATE_DIAMOND)
+                                blocks.SetBlock(x, y, z, BlockType.ORE_DIAMOND);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void GenerateClusters(this BlockType[,,] blocks, BlockType type, float spawnRate)
+        {
+            Vector3Int size = blocks.GetSize();
+
+            for (int x = 0; x < size.x; x++)
+            {
+                for (int z = 0; z < size.z; z++)
+                {
+                    for (int y = size.y - 1; y >= 0; y--)
+                    {
+                        // If not stone, skip
+                        if (blocks.GetBlock(x, y, z) != BlockType.STONE)
+                            continue;
+
+                        // If not in spawn rate, skip
+                        if (Random.value > spawnRate)
+                            continue;
+
+                        // Sets initial block
+                        blocks.SetBlock(x, y, z, type);
+
+                        blocks.PropagateToNeighbors(x, y, z, type);
+                    }
+                }
+            }
+        }
+
+        private static void PropagateToNeighbors(this BlockType[,,] blocks, int x, int y, int z, BlockType type)
+        {
+            // Get neighbors of this block
+            List<Vector3Int> neighbors = blocks.GetNeighbors(new Vector3Int(x, y, z));
+            float propagationRate = PROPAGATION_RATE;
+            float decreasedRate = DECREASE_PROPAGATION_RATE;
+
+            // While there are neighbors to check, try propagate
+            while (neighbors.Count > 0)
+            {
+                int rdmIndex = Random.Range(0, neighbors.Count);
+                Vector3Int pos = neighbors[rdmIndex];
+                neighbors.RemoveAt(rdmIndex);
+
+                // If neighbor is not type stone, skip
+                if (blocks.GetBlock(pos.x, pos.y, pos.z) != BlockType.STONE)
+                    continue;
+
+                // If not in spawn rate, skip
+                if (Random.value > propagationRate)
+                    continue;
+
+                blocks.SetBlock(pos.x, pos.y, pos.z, type);
+                neighbors.AddRange(blocks.GetNeighbors(pos));
+                propagationRate -= decreasedRate;
+
+                if (propagationRate <= 0)
+                    break;
             }
         }
     }
