@@ -471,7 +471,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockPrefab: {fileID: 2362950169638944968, guid: 8fe26e978e9db9594b18421ff9ca99be, type: 3}
   blockSize: {x: 1, y: 1, z: 1}
-  playSize: {x: 16, y: 16, z: 16}
+  playSize: {x: 15, y: 10, z: 15}
   tilesCount: {x: 24, y: 34}
   showBlocks: 18030000
 --- !u!33 &1439678144
@@ -489,7 +489,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1439678141}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
