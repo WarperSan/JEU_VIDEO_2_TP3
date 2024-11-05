@@ -22,6 +22,8 @@ namespace PartieB
 
             // Paint terrain
             blocks.PaintGrass();
+            blocks.PaintLava();
+            blocks.PaintDirt();
 
             // Generate resources per rarity
             // Generate clusters
@@ -35,7 +37,6 @@ namespace PartieB
             int[,] levels = new int[size.y, size.x];
             float randomorg = Random.Range(0, 100);
 
-            // For each pixel in the texture...
             int y = 0;
 
             while (y < size.y)
@@ -75,11 +76,77 @@ namespace PartieB
                         if (blocks.GetBlock(x, y, z) == Block.AIR)
                             continue;
 
+                        if (blocks.GetBlock(x, y, z) != Block.STONE)
+                            continue;
+
                         if (y == size.y - 1 || blocks.GetBlock(x, y + 1, z) == Block.AIR)
                         {
                             blocks.SetBlock(x, y, z, Block.GRASS);
                             break;
                         }
+
+                    }
+                }
+            }
+        }
+
+        private static void PaintLava(this Block[,,] blocks)
+        {
+            Vector3Int size = new(
+                blocks.GetLength(),
+                blocks.GetHeight(),
+                blocks.GetWidth()
+            );
+
+            int level = Mathf.FloorToInt(0.5f * size.y);
+
+            for (int x = 0; x < size.x; x++)
+            {
+                for (int z = 0; z < size.z; z++)
+                {
+                    for (int y = level; y >= 0; y--)
+                    {
+                        if (blocks.GetBlock(x, y, z) == Block.AIR)
+                        {
+                            blocks.SetBlock(x, y, z, Block.LAVA);
+
+                            if (y == 0)
+                                continue;
+
+                            Block blockUnder = blocks.GetBlock(x, y - 1, z);
+
+                            if (blockUnder is Block.AIR or Block.LAVA)
+                                continue;
+
+                            blocks.SetBlock(x, y - 1, z, Block.COBBLESTONE);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void PaintDirt(this Block[,,] blocks)
+        {
+            Vector3Int size = new(
+               blocks.GetLength(),
+               blocks.GetHeight(),
+               blocks.GetWidth()
+            );
+
+            for (int x = 0; x < size.x; x++)
+            {
+                for (int z = 0; z < size.z; z++)
+                {
+                    for (int y = size.y - 1; y >= 0; y--)
+                    {
+                        if (blocks.GetBlock(x, y, z) == Block.GRASS)
+                        {
+                            blocks.SetBlock(x, y - 1, z, Block.DIRT);
+                            blocks.SetBlock(x, y - 2, z, Block.DIRT);
+                            blocks.SetBlock(x, y - 3, z, Block.DIRT);
+                            break;
+                        }
+                        
                     }
                 }
             }

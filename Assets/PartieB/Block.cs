@@ -9,6 +9,7 @@ namespace PartieB
         GRASS = 0 + 24 * 33,
         DIRT = 2 + 24 * 33, 
         STONE = 1 + 24 * 33,
+        COBBLESTONE = 0 + 24 * 32,
 
         // ORES
         ORE_IRON = 1 + 24 * 31,
@@ -16,6 +17,9 @@ namespace PartieB
 
         // SPECIALS
         GLASS = 1 + 24 * 30,
-        SPAWNER = 1 + 24 * 29
+        SPAWNER = 1 + 24 * 29,
+    
+        // LIQUIDS
+        LAVA = 11 + 24 * 15
     }
 }

@@ -7,18 +7,18 @@ namespace PartieB
     {
         public static Block[,,] Generate(Vector3Int size, Block block = Block.AIR)
         {
-            var blocks = new Block[size.y, size.z, size.x];
+            var blocks = new Block[size.y, size.x, size.z];
 
             int height = size.y;
-            int length = size.z;
-            int width = size.x;
+            int length = size.x;
+            int width = size.z;
 
             // Fill with air
             for (int y = 0; y < height; y++)
             {
-                for (int z = 0; z < width; z++)
+                for (int x = 0; x < width; x++)
                 {
-                    for (int x = 0; x < length; x++)
+                    for (int z = 0; z < length; z++)
                     {
                         blocks[y, x, z] = block;
                     }
@@ -63,12 +63,12 @@ namespace PartieB
             return blocks[y, x, z];
         }
 
-        public static bool SetBlock(this Block[,,] blocks, int x, int y, int z, Block state)
+        public static bool SetBlock(this Block[,,] blocks, int x, int y, int z, Block type)
         {
             if (!blocks.IsInBounds(x, y, z))
                 return false;
 
-            blocks[y, x, z] = state;
+            blocks[y, x, z] = type;
             return true;
         }
     }
