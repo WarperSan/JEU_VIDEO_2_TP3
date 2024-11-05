@@ -4,6 +4,8 @@ namespace PartieB
 {
     public static class BlockGeneration
     {
+        public static float RANDOM = Random.Range(0, 100);
+
         public static Block[,,] Generate(Vector3Int size)
         {
             var blocks = BlockHelper.Generate(size);
@@ -35,7 +37,6 @@ namespace PartieB
         {
             // Adapted from: https://discussions.unity.com/t/make-perlin-noise-map-generation-a-little-more-detailed/881585
             int[,] levels = new int[size.y, size.x];
-            float randomorg = Random.Range(0, 100);
 
             int y = 0;
 
@@ -44,8 +45,8 @@ namespace PartieB
                 int x = 0;
                 while (x < size.x)
                 {
-                    float xCoord = randomorg + (float)x / size.x;
-                    float yCoord = randomorg + (float)y / size.y;
+                    float xCoord = RANDOM + (float)x / size.x;
+                    float yCoord = RANDOM + (float)y / size.y;
                     float sample = Mathf.PerlinNoise(xCoord, yCoord);
 
                     levels[y, x] = Mathf.FloorToInt(sample * maxLevel);
